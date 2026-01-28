@@ -1,0 +1,145 @@
+# Playwright Framework Rules for Cursor AI
+
+You are an expert in TypeScript, Playwright test automation, and Page Object Model pattern.
+
+## Code Style and Structure
+- Write concise, technical TypeScript code
+- Use functional programming patterns; avoid classes except for Page Objects
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Structure files: imports, types, main code, helpers
+
+## Framework Protection Rules
+CRITICAL: The framework files are READ-ONLY
+- ❌ NEVER modify: BasePage.ts, FormHelper.ts, controls.types.ts
+- ONLY generate: New Page Object files, New Test spec files
+
+## Page Object Rules
+
+### Control Definitions
+1. ALL controls MUST be in private controls object at class head
+2. EVERY control MUST have "as Control" type annotation
+3. ONLY capture controls directly used in test cases (3-20 controls max)
+4. Controls object comes immediately after protected url
+
+### Supported Control Types
+Use ONLY these types:
+button, textbox, checkbox, radio, combobox, link, searchbox, slider, spinbutton, switch, tab, menuitem, option, listbox, grid, tree, dialog, alertdialog, img, heading, list, listitem
+
+### Selector Priority (use in this order)
+1. label (best for inputs)
+2. name (best for buttons/links)  
+3. testId
+4. placeholder
+5. text
+6. css (simple selectors only)
+7. xpath (last resort)
+
+### Primary Method Usage
+- ALWAYS use formEnter([controls]) as primary interaction method
+- Use enter(control) ONLY when specific timing control needed
+- Use $() helper for controls that need data (inputs, checkboxes, dropdowns)
+- Don't use $() on buttons/links
+
+## Page Object Template
+```typescript
+import { BasePage } from "./BasePage";
+import { Control } from "../types/controls.types";
+
+export class PageNamePage extends BasePage {
+  protected url = "https://example.com/page";
+
+  private controls = {
+    control1: { type: "textbox", label: "Label" } as Control,
+    control2: { type: "button", name: "Name" } as Control
+  };
+
+  async goto() {
+    await this.page.goto(this.url);
+  }
+
+  async action(data: string) {
+    await this.formEnter([
+      this.$(this.controls.control1, data),
+      this.controls.control2
+    ]);
+  }
+}
+```
+
+## Test Template
+```typescript
+import { test, expect } from "@playwright/test";
+import { PageNamePage } from "../src/pages/PageNamePage";
+
+test.describe("Feature Tests", () => {
+  test("description", async ({ page }) => {
+    const pageName = new PageNamePage(page);
+    await pageName.goto();
+    await pageName.action("data");
+    expect(result).toBe(expected);
+  });
+});
+```
+
+## Common Patterns
+
+### Form with Multiple Fields
+```typescript
+await this.formEnter([
+  this.$(this.controls.field1, data.field1),
+  this.$(this.controls.field2, data.field2),
+  this.$(this.controls.checkbox, true),
+  this.controls.submitButton
+]);
+```
+
+### Dynamic Controls
+```typescript
+// Definition with {0} placeholder
+editButton: { type: "button", dynamic: "button#edit_{0}" } as Control
+
+// Usage with $dynamicControl
+this.$dynamicControl(this.controls.editButton, userId)
+```
+
+## What NOT to Capture
+Never capture these unless specifically testing them:
+- Navigation menus, headers, footers
+- Logos, branding, decorative images
+- Page titles, headings (unless verifying)
+- Help text, instructions
+- Cookie consent banners
+
+## Code Generation Checklist
+Before generating code, ensure:
+- [ ] Class extends BasePage
+- [ ] protected url property defined
+- [ ] ALL controls in private controls object
+- [ ] Every control has "as Control" annotation
+- [ ] Only controls for test cases (3-20 max)
+- [ ] Using formEnter() as primary method
+- [ ] Proper selector priority followed
+- [ ] All methods are async with await
+- [ ] Descriptive method names
+
+## Error Prevention
+- Always add "as Control" annotation
+- Never put assertions in page objects
+- Don't use $() on buttons/links
+- Avoid complex CSS selectors
+- No hard-coded waits (use waitForElement)
+
+## Dynamic Selectors
+Format: {0}, {1}, {2} for placeholders
+```typescript
+dynamic: "button[data-id='{0}']"  // Correct
+dynamic: "button#{id}"             // Wrong
+```
+
+## Test Best Practices
+- Tests are independent (no shared state)
+- One test, one focus
+- Arrange-Act-Assert pattern
+- Descriptive test names
+- Use page objects, not direct locators

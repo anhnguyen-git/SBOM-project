@@ -1,0 +1,42 @@
+{
+  "name": "pom-playwright",
+  "version": "1.0.0",
+  "description": "Playwright TypeScript testing framework for POM_Playwright",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "test": "npm run build && playwright test",
+    "test:dev": "playwright test",
+    "test:headed": "npm run build && playwright test --headed",
+    "test:debug": "npm run build && playwright test --debug",
+    "test:ui": "npm run build && playwright test --ui",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --ext .ts --no-error-on-unmatched-pattern",
+    "mcp": "npx @playwright/mcp --browser chrome --output-dir ./mcp-output",
+    "mcp:headless": "npx @playwright/mcp --browser chrome --headless --output-dir ./mcp-output",
+    "mcp:firefox": "npx @playwright/mcp --browser firefox --output-dir ./mcp-output"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "automation",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.45",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^20.19.19",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.3"
+  }
+}

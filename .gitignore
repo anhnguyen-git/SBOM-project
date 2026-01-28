@@ -1,0 +1,12 @@
+/.vscode/
+/.github/
+/prompts/
+/node_modules/
+/blob-report/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+test-results.json
+*.log
+
+
