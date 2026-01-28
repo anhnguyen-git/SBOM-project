@@ -4,7 +4,7 @@ import {
   doesTableContain,
   fillterTableByColumns,
   normalizeTableByAlias,
-} from "./utils";
+} from "./Utils";
 
 /**
  * Map alias column name → real column name(s)
